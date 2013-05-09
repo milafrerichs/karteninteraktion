@@ -14,3 +14,7 @@ https://github.com/pgte/node-kinect
 http://urbanhonking.com/ideasfordozens/2011/10/27/streaming-kinect-skeleton-data-to-the-web-with-node-js/
 
 https://github.com/atduskgreg/Skelestreamer
+
+
+
+https://github.com/doug/depthjs
