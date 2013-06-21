@@ -3,7 +3,7 @@ clc
 
 D = 3; % the number of dimensions to use: X, Y, Z
 M = 12; % output symbols
-N = 15; % states
+N = 2; % states
 LR = 2; % degree of play in the left-to-right HMM transition matrix
 
 

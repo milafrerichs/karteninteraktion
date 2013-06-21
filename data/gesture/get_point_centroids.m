@@ -13,7 +13,6 @@ for n = 1:size(data,1)
   end
   mean(n,:) = mean(n,:)./size(data,2);
 end
-mean
 % Using k-means to make data discrete
 [centroids,points,idx] = kmeans(mean,K);
 K = size(centroids,1);
