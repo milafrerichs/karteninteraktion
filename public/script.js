@@ -16,11 +16,22 @@ function pan(map,hand_position,hand_position_before,elbow_position) {
 
 
 $(document).ready(function() {
-    var map = L.map('map').setView([51.505, -0.09], 13);
 
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    var api_key = "5417a6b95e8544b7a8814ac874ebd27b"
+
+    var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/'+api_key+'/{styleId}/256/{z}/{x}/{y}.png',
+        cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade';
+
+    var minimal   = L.tileLayer(cloudmadeUrl, {styleId: 22677, attribution: cloudmadeAttribution}),
+        midnight  = L.tileLayer(cloudmadeUrl, {styleId: 999,   attribution: cloudmadeAttribution}),
+        motorways = L.tileLayer(cloudmadeUrl, {styleId: 46561, attribution: cloudmadeAttribution});
+    var map = L.map('map',{layers: [minimal, motorways]}).setView([51.505, -0.09], 13);
+    var baseMaps = {
+        "Minimal": minimal,
+        "Night View": midnight
+    };
+
+    L.control.layers(baseMaps).addTo(map);
 
 var kinect = openni('/skeleton');
 jointNames = [
