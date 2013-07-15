@@ -1,17 +1,25 @@
 function pan(map,hand_position,hand_position_before,elbow_position) {
   if(hand_position.length > 2 && elbow_position.length > 2) {
-    if(hand_position[1] > elbow_position[1] && hand_position[0] > elbow_position[0]) {
-      treshold = elbow_position[1]*1.1;
-      if (hand_position[0]+treshold > elbow_position[0] || hand_position[0]-treshold < elbow_position[0] ) {
-        if (hand_position_before.length > 2) {
-          if (hand_position[0] > hand_position_before[0]*1.5 && hand_position[0] != hand_position_before[0]) {
-            console.log("pan");
-            map.panBy([5, 5]);
-          }
-        }
+  treshold = hand_position[1]*1.1;
+  if(hand_position[1]+treshold == elbow_position[1] && hand_position[0]+treshold > elbow_position[0]) {
+    	console.log("static-pan");
+      map.panBy([5, 5]);
       }
-    }
   }
+}
+
+function zoomin(map,handposition_left, handposition_right) {
+	if(handposition_left[1] == handposition_right[1] && handposition_left[0] == handposition_right[0]){
+		console.log("zoomin");
+		map.zoom(5);
+	}	
+}
+
+function zoomout(map, handposition_left, handposition_right) {
+	if(handposition_left[0] < handposition_right[0]+100) {
+		console.log("zoomout");
+		map.zoom();
+	}
 }
 
 
