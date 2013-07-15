@@ -61,6 +61,14 @@ jointNames = [
   "right_foot"
 ];
 userId = 0;
+
+kinect.on('Wave', function(gesture) {
+  console.log('wave');
+});
+kinect.on('Click', function(gesture) {
+  console.log('click');
+});
+
 kinect.on('newuser', function(userId) {
   userId = userId;
   console.log('newuser', userId);
@@ -76,11 +84,7 @@ jointNames.forEach(function(jointName) {
       position_left_hand = [parseInt(x),parseInt(y),parseInt(z)];
       date_now = new Date();
       time = date_now.getMilliseconds();
-      if (time > time_before) {
-        ms++;
-        $('#daten').append("<p>"+ms+","+x+","+y+","+z+"</p>");
-        console.log(ms+","+x+","+y+","+z);
-      }
+
     }
     if(jointName == "left_elbow") {
       position_left_elbow = [parseInt(x),parseInt(y),parseInt(z)];
@@ -92,9 +96,9 @@ jointNames.forEach(function(jointName) {
       position_right_elbow = [parseInt(x),parseInt(y),parseInt(z)];
     }
     //pan(map,position_left_hand,position_left_hand_before,position_left_elbow);
-    position_left_hand_before = position_left_hand;
+    //position_left_hand_before = position_left_hand;
 
-    pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
+    //pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
     //position_right_hand_before = position_right_hand;
 
 
@@ -104,7 +108,8 @@ jointNames.forEach(function(jointName) {
   'posedetected',
   'calibrationstart',
   'calibrationsuccess',
-  'calibrationfail'
+  'calibrationfail',
+  'gesturerecognized'
 ].forEach(function(userEventType) {
   kinect.on(userEventType, function(userId) {
     console.log(userEventType + ' (' + userId + ')');
