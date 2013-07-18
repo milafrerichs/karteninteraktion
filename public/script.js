@@ -1,4 +1,4 @@
-function pan(map,hand_position,hand_position_before,elbow_position) {
+function pan(map,hand_position,elbow_position) {
   if(hand_position.length > 2 && elbow_position.length > 2) {
   treshold = hand_position[1]*1.1;
   if(hand_position[1]+treshold == elbow_position[1] && hand_position[0]+treshold > elbow_position[0]) {
@@ -9,23 +9,24 @@ function pan(map,hand_position,hand_position_before,elbow_position) {
 }
 
 function zoomin(map,handposition_left, handposition_right) {
-	if(handposition_left[1] == handposition_right[1] && handposition_left[0] == handposition_right[0]){
+  treshold = 80;
+  if(handposition_left[0] < treshold && handposition_left[0] > -treshold && handposition_left[1] < treshold && handposition_left[1] > -treshold && handposition_right[0] < treshold && handposition_right[0] > -treshold && handposition_right[1] < treshold && handposition_right[1] > -treshold ) {
 		console.log("zoomin");
-		map.zoom(5);
-	}	
+		map.zoomIn();
+	}
 }
 
 function zoomout(map, handposition_left, handposition_right) {
-	if(handposition_left[0] < handposition_right[0]+100) {
+	if(handposition_left[0] < -400 && handposition_right[0] > 400) {
 		console.log("zoomout");
-		map.zoom();
+		map.zoomOut();
 	}
 }
 
 
 $(document).ready(function() {
 
-    var api_key = "5417a6b95e8544b7a8814ac874ebd27b"
+    var api_key = "5417a6b95e8544b7a8814ac874ebd27b";
 
     var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/'+api_key+'/{styleId}/256/{z}/{x}/{y}.png',
         cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade';
@@ -63,6 +64,7 @@ jointNames = [
   "left_knee",
   "left_ankle",
   "left_foot",
+
   "right_hip",
   "right_knee",
   "right_ankle",
@@ -74,28 +76,29 @@ var layerSwitcher = new Boolean(true);
 
 kinect.on('Wave', function(gesture) {
   console.log('wave');
-  map.reset(true);
+  map.setView([51.505, -0.09], 13);
 });
 
 kinect.on('Click', function(gesture) {
   console.log('click');
-  
+
   if(layerSwitcher){
   	console.log("midnight Layer");
-  	midnight.bringtofront();
+  	midnight.addTo(map);
   	layerSwitcher = false;
-  	
+
   }
   else if (!layerSwitcher){
   	console.log("minimal Layer");
-  	minimal.bringtofront();
+  	minimal.bringToFront();
+    minimal.addTo(map);
   	layerSwitcher = true;
   }
   else{
   	console.log("No Layer switch.");
   }
-  
-  
+
+
 });
 
 kinect.on('newuser', function(userId) {
@@ -111,9 +114,6 @@ jointNames.forEach(function(jointName) {
   kinect.on(jointName, function(userId, x, y, z) {
     if(jointName == "left_hand") {
       position_left_hand = [parseInt(x),parseInt(y),parseInt(z)];
-      date_now = new Date();
-      time = date_now.getMilliseconds();
-
     }
     if(jointName == "left_elbow") {
       position_left_elbow = [parseInt(x),parseInt(y),parseInt(z)];
@@ -124,14 +124,14 @@ jointNames.forEach(function(jointName) {
     if(jointName == "right_elbow") {
       position_right_elbow = [parseInt(x),parseInt(y),parseInt(z)];
     }
-    //pan(map,position_left_hand,position_left_hand_before,position_left_elbow);
-    //position_left_hand_before = position_left_hand;
-    
-    //zoomin(map,position_left_hand, position_right_hand);
-    //zoomout(map, position_left_hand, position_right_hand);
-    
+    pan(map,position_left_hand,position_left_elbow);
+    position_left_hand_before = position_left_hand;
+
+    zoomin(map,position_left_hand, position_right_hand);
+    zoomout(map, position_left_hand, position_right_hand);
+
     //pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
-    //position_right_hand_before = position_right_hand;
+    position_right_hand_before = position_right_hand;
 
 
   });
