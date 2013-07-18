@@ -69,12 +69,33 @@ jointNames = [
   "right_foot"
 ];
 userId = 0;
+var layerSwitcher = new Boolean(true);
+
 
 kinect.on('Wave', function(gesture) {
   console.log('wave');
+  map.reset(true);
 });
+
 kinect.on('Click', function(gesture) {
   console.log('click');
+  
+  if(layerSwitcher){
+  	console.log("midnight Layer");
+  	midnight.bringtofront();
+  	layerSwitcher = false;
+  	
+  }
+  else if (!layerSwitcher){
+  	console.log("minimal Layer");
+  	minimal.bringtofront();
+  	layerSwitcher = true;
+  }
+  else{
+  	console.log("No Layer switch.");
+  }
+  
+  
 });
 
 kinect.on('newuser', function(userId) {
