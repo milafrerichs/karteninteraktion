@@ -126,7 +126,10 @@ jointNames.forEach(function(jointName) {
     }
     //pan(map,position_left_hand,position_left_hand_before,position_left_elbow);
     //position_left_hand_before = position_left_hand;
-
+    
+    //zoomin(map,position_left_hand, position_right_hand);
+    //zoomout(map, position_left_hand, position_right_hand);
+    
     //pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
     //position_right_hand_before = position_right_hand;
 
