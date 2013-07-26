@@ -1,23 +1,32 @@
-function pan(map,hand_position,hand_position_before,elbow_position) {
+function pan(map,hand_position,elbow_position) {
   if(hand_position.length > 2 && elbow_position.length > 2) {
-    if(hand_position[1] > elbow_position[1] && hand_position[0] > elbow_position[0]) {
-      treshold = elbow_position[1]*1.1;
-      if (hand_position[0]+treshold > elbow_position[0] || hand_position[0]-treshold < elbow_position[0] ) {
-        if (hand_position_before.length > 2) {
-          if (hand_position[0] > hand_position_before[0]*1.5 && hand_position[0] != hand_position_before[0]) {
-            console.log("pan");
-            map.panBy([5, 5]);
-          }
-        }
+  treshold = hand_position[1]*1.1;
+  if(hand_position[1]+treshold == elbow_position[1] && hand_position[0]+treshold > elbow_position[0]) {
+    	console.log("static-pan");
+      map.panBy([5, 5]);
       }
-    }
   }
+}
+
+function zoomin(map,handposition_left, handposition_right) {
+  treshold = 80;
+  if(handposition_left[0] < treshold && handposition_left[0] > -treshold && handposition_left[1] < treshold && handposition_left[1] > -treshold && handposition_right[0] < treshold && handposition_right[0] > -treshold && handposition_right[1] < treshold && handposition_right[1] > -treshold ) {
+		console.log("zoomin");
+		map.zoomIn();
+	}
+}
+
+function zoomout(map, handposition_left, handposition_right) {
+	if(handposition_left[0] < -400 && handposition_right[0] > 400) {
+		console.log("zoomout");
+		map.zoomOut();
+	}
 }
 
 
 $(document).ready(function() {
 
-    var api_key = "5417a6b95e8544b7a8814ac874ebd27b"
+    var api_key = "5417a6b95e8544b7a8814ac874ebd27b";
 
     var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/'+api_key+'/{styleId}/256/{z}/{x}/{y}.png',
         cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade';
@@ -55,12 +64,43 @@ jointNames = [
   "left_knee",
   "left_ankle",
   "left_foot",
+
   "right_hip",
   "right_knee",
   "right_ankle",
   "right_foot"
 ];
 userId = 0;
+var layerSwitcher = new Boolean(true);
+
+
+kinect.on('Wave', function(gesture) {
+  console.log('wave');
+  map.setView([51.505, -0.09], 13);
+});
+
+kinect.on('Click', function(gesture) {
+  console.log('click');
+
+  if(layerSwitcher){
+  	console.log("midnight Layer");
+  	midnight.addTo(map);
+  	layerSwitcher = false;
+
+  }
+  else if (!layerSwitcher){
+  	console.log("minimal Layer");
+  	minimal.bringToFront();
+    minimal.addTo(map);
+  	layerSwitcher = true;
+  }
+  else{
+  	console.log("No Layer switch.");
+  }
+
+
+});
+
 kinect.on('newuser', function(userId) {
   userId = userId;
   console.log('newuser', userId);
@@ -74,13 +114,6 @@ jointNames.forEach(function(jointName) {
   kinect.on(jointName, function(userId, x, y, z) {
     if(jointName == "left_hand") {
       position_left_hand = [parseInt(x),parseInt(y),parseInt(z)];
-      date_now = new Date();
-      time = date_now.getMilliseconds();
-      if (time > time_before) {
-        ms++;
-        $('#daten').append("<p>"+ms+","+x+","+y+","+z+"</p>");
-        console.log(ms+","+x+","+y+","+z);
-      }
     }
     if(jointName == "left_elbow") {
       position_left_elbow = [parseInt(x),parseInt(y),parseInt(z)];
@@ -91,11 +124,14 @@ jointNames.forEach(function(jointName) {
     if(jointName == "right_elbow") {
       position_right_elbow = [parseInt(x),parseInt(y),parseInt(z)];
     }
-    //pan(map,position_left_hand,position_left_hand_before,position_left_elbow);
+    pan(map,position_left_hand,position_left_elbow);
     position_left_hand_before = position_left_hand;
 
-    pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
-    //position_right_hand_before = position_right_hand;
+    zoomin(map,position_left_hand, position_right_hand);
+    zoomout(map, position_left_hand, position_right_hand);
+
+    //pan(map,position_right_hand,position_right_hand_before,position_right_elbow);
+    position_right_hand_before = position_right_hand;
 
 
   });
@@ -104,7 +140,8 @@ jointNames.forEach(function(jointName) {
   'posedetected',
   'calibrationstart',
   'calibrationsuccess',
-  'calibrationfail'
+  'calibrationfail',
+  'gesturerecognized'
 ].forEach(function(userEventType) {
   kinect.on(userEventType, function(userId) {
     console.log(userEventType + ' (' + userId + ')');
